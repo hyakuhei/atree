@@ -1,0 +1,16 @@
+0. Open Safe
+0.1 Pick Lock
+0.2 Learn Combo
+0.3 Cut Open Safe
+0.4 Install Improperly
+
+0.2.1 Find Written Combo 
+0.2.2 Get Combo From Target
+
+0.2.2.1 Threaten
+0.2.2.2 Blackmail
+0.2.2.3 Eavesdrop
+0.2.2.4 Bribe
+
+0.2.2.3.1 Listen to Conversation
+0.2.2.3.2 Get target to state combo

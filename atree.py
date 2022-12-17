@@ -102,7 +102,7 @@ if __name__ == "__main__":
             print("This will create a tree.txt and a tree.png")
 
     if len(sys.argv) == 3:
-        if "--out" == sys.argv[1]:
+        if sys.argv[1] in ["--out", "-out", "-o"]:
             # Call the mermaid CLI (expecting Docker) to generate the file
             # 1. Write the tree text
             # 2. Launch docker, have it create the PNG output
@@ -114,6 +114,9 @@ if __name__ == "__main__":
                 ["docker", "run", "--rm", "-u", f"{os.geteuid()}:{os.getegid()}", "-v", f"{os.getcwd()}:/data", "minlag/mermaid-cli", "--input", f"/data/{sys.argv[2]}.mm", "--output", f"/data/{sys.argv[2]}.png"]
             )
             
+            _ = subprocess.run(
+                ["docker", "run", "--rm", "-u", f"{os.geteuid()}:{os.getegid()}", "-v", f"{os.getcwd()}:/data", "minlag/mermaid-cli", "--input", f"/data/{sys.argv[2]}.mm", "--output", f"/data/{sys.argv[2]}.svg"]
+            )
 
 
         

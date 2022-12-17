@@ -1,0 +1,59 @@
+0. Read a message encrypted with PGP
+0.1. Decrypt the message iteself
+0.1.1. Break asymmetric encryption
+0.1.1.1 Brute-force break asymmetric encryption
+0.1.1.2 Mathematically break asymmetric encryption
+0.1.1.2.1 Break RSA
+0.1.1.2.2 Factor RSA modulus/calculate ElGamal discrete log
+0.1.1.3 Cryptanalyze asymmetric encryption
+0.1.1.3.1 General cryptanalysis of RSA/ElGaml
+0.1.2 Break symmetric key used to encrypt the message via other means
+0.1.2.1 Brute-force symmetric-key encryption
+0.1.2.2 Cryptanalysis of symmetric-key encryption
+0.2. Determine symmetric key used to encrypt the message via other means
+0.2.1 Fool sender into encrypting message using public key whos private key is known
+0.2.1.1 Convince sender that a fake key -with known private- is the key of the intended recipient
+0.2.1.2 Convince sender to encrypt using more than one-key
+0.2.1.3 Have the message encrypted with a different public key in the background, unbeknownst to the sender
+0.2.2 Have the recipient sign the encrypted symmetric key
+0.2.3 Monitor senders computer memory
+0.2.4 Monitor receivers computer memory
+0.2.5 Determine key from pseudo random number generator
+0.2.5.1 Determine state of randseed when message was encrypted
+0.2.5.2 Implant software that alters the state of the randseed
+0.2.5.3 Implant software that directly affects the choice of symmetric key
+0.2.6 Implant software that exposes the symmetric key
+0.3 Get recipient to decrypt message
+0.3.1 Chosen ciphertext attack on symmetric key
+0.3.2 Chosen ciphertext attack on public key
+0.3.3 Send the original message to the recipient
+0.3.4 Monitor outgoing mail of recipient
+0.3.5 Spoof Reply-to: or From: field of the original message
+0.3.6 Read message after it has been decrypted by the recipient
+0.3.6.1 Copy message off users hard drive or virtual memory
+0.3.6.2 Copy message off backups
+0.3.6.3 Monitor network traffic
+0.3.6.4 Use electromagnetic snooping techniques to read message as it is displayed on the screen
+0.3.6.5 Recover message from printout
+0.4 Obtain private key of recipient
+0.4.1 Factor RSA modulus/calculate ElGamal discrete log
+0.4.2 Get private key from recipients key ring
+0.4.2.1 Obtain encrypted private key ring
+0.4.2.1.1 Copy it from the users hard drive
+0.4.2.1.2 Copy it from backups
+0.4.2.1.3 Monitor network traffic
+0.4.2.1.4 Implant software to expose copy of the private key
+0.4.2.2 Decrypt private key
+0.4.2.2.1 Break IDEA encryption
+0.4.2.2.1.1 Brute-force break IDEA
+0.4.2.2.1.2 Cryptanalysis of IDEA
+0.4.2.2.2 Learn passphrase
+0.4.2.2.2.1 Monitor keyboard when user types passphrase
+0.4.2.2.2.2 Convince user to reveal passphrase
+0.4.2.2.2.3 Use keyboard-logging software to record passphrase when typed by user
+0.4.2.2.2.4 Guess passphrase
+0.4.3 Monitor recipients memory
+0.4.4 Implant software to expose private key
+0.4.5 Generate insecure public/private keypair for recipient
+
+
