@@ -4,7 +4,7 @@ I like to think in trees, it can be useful to write these things down as lists.
 atree allows you to write a list, and have it turn into a 
 Take a simple numbered list and output a number of trees based on the numbering.
 
-![Tree Diagram of the list](readme-example.png)
+![Tree Diagram of the list](example.png)
 
 ## Input - Numbered lists
 ```
@@ -15,6 +15,8 @@ Take a simple numbered list and output a number of trees based on the numbering.
 1.3.1 Write a tool
 1.3.1.2 Test the tool
 1.3.1.3 Publish the tool on GitHub
+1.3.1.4 Realize that you need support for links
+1.3.1.5 Add the implementation #link 1.3.1
 ```
 
 ## Run the tool - print mermaid text to output

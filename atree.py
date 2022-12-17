@@ -1,6 +1,6 @@
 import sys, tempfile, subprocess, os
 
-if __name__ == "__main__":
+def alphaFromDecimals(decimals: str) -> str:
     map = {'1':'A',
         '2':'B',
         '3':'C',
@@ -11,6 +11,19 @@ if __name__ == "__main__":
         '8':'H',
         '9':'I',
         '0':'K'}
+    
+    node_id = ""
+    for c in decimals:
+        if c in map:
+            node_id += map[c]
+            
+    return node_id
+
+if __name__ == "__main__":
+    # In-tree text directives
+    link_txt = "#link"
+
+
 
     nodes = {}
     links = []
@@ -24,22 +37,49 @@ if __name__ == "__main__":
         # e.g 1.2.2.3.4
         # e.g 1.2.3.4.5.
 
-        node_id = ""
-        for c in slices[0]:
-            if c in map:
-                node_id += map[c]
+        node_id = alphaFromDecimals(slices[0])
         
         if node_id != "":
             nodes[node_id] = " ".join(slices[1:]).strip()
         
-        #print(f'{node_id} {"".join(slices[1:0])}')
-    # At this point we have all the nodes, with hierarchical node names, stored in a flat map (nodes)
-    # Should we store it in a tree? 
-
     for node_id in nodes.keys():
+        # Add all the hierarchical links
         if node_id[:-1] in nodes:
-            links.append(f"{node_id[:-1]} --> {node_id}" )
+            links.append(f"{node_id[:-1]} --> {node_id}")
 
+        # Add any additional links (using the #link directive)
+        # A user can add a link which will draw from the current node to the specified one
+        # 1. Top
+        # 1.1 Left #link 1.2.3, 1.2
+        # 1.2 Right
+        # 1.2.3 Down
+
+        # A link directive (currently "#link") should be followed by a comma separated list of items to link to
+        # The string should then either terminate, or another # directive may start.
+        # That other directive might be another #link or something unimplemented yet, like maybe #rlink (reversed arrow)...
+        link_idx = nodes[node_id].find(link_txt)
+        while link_idx != -1 and link_idx < len(nodes[node_id]): 
+            next_directive_idx = nodes[node_id][link_idx+1:].find('#')
+            if next_directive_idx == -1:
+                next_directive_idx = len(nodes[node_id]) #(last idx)
+
+            # Ok so now we look for all the number strings between link_idx
+            # print(f"Found a directive in {nodes[node_id]} between {link_idx} and {next_directive_idx}")
+
+            for nodeString in nodes[node_id][link_idx+len(link_txt):next_directive_idx].replace(","," ").split(" "):
+                nodeString = nodeString.strip()
+                if nodeString != '':
+                    links.append(f"{node_id} --> {alphaFromDecimals(nodeString)}")
+
+
+            #Skip ahead (or to the end of the string)
+            link_idx = next_directive_idx
+
+    # Go through the code and strip out any #directives
+    for node_id in nodes.keys():
+        link_idx = nodes[node_id].find(link_txt)
+        if link_idx > 0:
+            nodes[node_id] = nodes[node_id][0:link_idx-1]
 
     graph_text = "graph TD\n"
     for node_id in nodes.keys():
