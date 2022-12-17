@@ -1,0 +1,13 @@
+0. Access to house
+0.1. Access through door
+0.1.1 Door unlocked
+0.1.2 Door locked
+0.1.2.1 Lost Key
+0.1.2.2 Key duplicated
+0.1.2.3 Lock picked
+0.2 Access through Window 
+0.2.1 Window open
+0.2.2 Window closed
+0.2.2.1 Window broken
+0.2.2.2 Window lock sliped
+0.3 Access through crawlspace
