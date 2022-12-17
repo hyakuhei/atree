@@ -1,8 +1,12 @@
 # Simple tree drawing tool
 I like to think in trees, it can be useful to write these things down as lists.
 
-atree allows you to write a list, and have it turn into a 
-Take a simple numbered list and output a number of trees based on the numbering.
+atree allows you to write a numbered list, and have it turn into a tree!
+
+## Features
+Write numbered lists, get trees!
+
+Output can be either Mermaid formatted data or as generated SVG and PNG files.
 
 ![Tree Diagram of the list](example.png)
 
