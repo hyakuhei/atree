@@ -17,9 +17,9 @@ Take a simple numbered list and output a number of trees based on the numbering.
 1.3.1.3 Publish the tool on GitHub
 ```
 
-## Run the tool
+## Run the tool - print mermaid text to output
 ```
-cat list.atree | python3 atree.py > list.mm
+cat list.atree | python3 atree.py
 ```
 
 ## Output - Mermaid graph
@@ -46,6 +46,6 @@ Mermaid is run from a docker container using the following
 docker pull minlag/mermaid-cli
 ```
 ```
- docker run --rm -u `id -u`:`id -g` -v `pwd`:/data minlag/mermaid-cli --input /data/list.mm --output /data/list.png
+cat list.atree | python3 atree.py --out example
 ```
 
