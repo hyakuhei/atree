@@ -7,7 +7,7 @@ graph TD
 	ACAB[Test the tool]
 	ACAC[Publish the tool on GitHub]
 	ACAD[Realize that you need support for links]
-	ACAE[Add the implementation]
+	ACADA[Add the implementation]
 	A --> AA
 	A --> AB
 	A --> AC
@@ -15,5 +15,5 @@ graph TD
 	ACA --> ACAB
 	ACA --> ACAC
 	ACA --> ACAD
-	ACA --> ACAE
-	ACAE --> ACA
+	ACAD --> ACADA
+	ACADA --> ACA

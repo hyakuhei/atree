@@ -16,7 +16,7 @@ Take a simple numbered list and output a number of trees based on the numbering.
 1.3.1.2 Test the tool
 1.3.1.3 Publish the tool on GitHub
 1.3.1.4 Realize that you need support for links
-1.3.1.5 Add the implementation #link 1.3.1
+1.3.1.4.1 Add the implementation #link 1.3.1
 ```
 
 ## Run the tool - print mermaid text to output
