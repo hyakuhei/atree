@@ -92,19 +92,19 @@ if __name__ == "__main__":
 
     commands = {
         "--help": (
-            "$ atree.py --help",
+            "--help",
             "Read from STDIN and create a mermaid diagram.",
         ),
         "--out": (
-            "$ atree.py --out base",
+            "--out base",
             "Generate a series of files, base.mm, base.png, base.svg",
         ),
         "--wrap": (
-            "$ atree.py --wrap 20",
+            "--wrap 20",
             "Wrap each box at _roughly_ 20 characters - will try not to break words up",
         ),
         "--lr":(
-            "$ atree.py --lr",
+            "--lr",
             "Print graph left-to-right rather than top down"
         )
     }
@@ -134,7 +134,6 @@ if __name__ == "__main__":
                 n += c
 
         return n
-
 
     def _genGraphText(nodes):
         graph_text = f"graph {parms['orientation']}\n"
@@ -185,39 +184,27 @@ if __name__ == "__main__":
         with open(f"{parms['exec_mermaid_filename']}.mm", "w") as f:
             f.write(_genGraphText(nodes))
 
-        _ = subprocess.run(
-            [
-                "docker",
-                "run",
-                "--rm",
-                "-u",
-                f"{os.geteuid()}:{os.getegid()}",
-                "-v",
-                f"{os.getcwd()}:/data",
-                "minlag/mermaid-cli",
-                "--input",
-                f"/data/{parms['exec_mermaid_filename']}.mm",
-                "--output",
-                f"/data/{parms['exec_mermaid_filename']}.png",
-            ]
-        )
 
-        _ = subprocess.run(
-            [
-                "docker",
-                "run",
-                "--rm",
-                "-u",
-                f"{os.geteuid()}:{os.getegid()}",
-                "-v",
-                f"{os.getcwd()}:/data",
-                "minlag/mermaid-cli",
-                "--input",
-                f"/data/{parms['exec_mermaid_filename']}.mm",
-                "--output",
-                f"/data/{parms['exec_mermaid_filename']}.svg",
-            ]
-        )
+        def _dockerMermaid(basefile, extension):
+            _ = subprocess.run(
+                [
+                    "docker",
+                    "run",
+                    "--rm",
+                    "-u",
+                    f"{os.geteuid()}:{os.getegid()}",
+                    "-v",
+                    f"{os.getcwd()}:/data",
+                    "minlag/mermaid-cli",
+                    "--input",
+                    f"/data/{basefile}.mm",
+                    "--output",
+                    f"/data/{basefile}.{extension}",
+                ]
+            )
+
+        _dockerMermaid(f"{parms['exec_mermaid_filename']}", "png")
+        _dockerMermaid(f"{parms['exec_mermaid_filename']}", "svg")
 
     # If no-args just print
     if parms["print"]:
