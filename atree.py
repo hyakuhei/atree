@@ -111,6 +111,7 @@ if __name__ == "__main__":
 
     parms = {"exec_mermaid": False, "print": True, "wrap": False, "orientation": "TD"}
 
+
     def _variableArg(flag: str) -> Union[str, None]:
         if flag in sys.argv:
             assert len(sys.argv) > sys.argv.index(
@@ -135,6 +136,7 @@ if __name__ == "__main__":
 
         return n
 
+
     def _genGraphText(nodes):
         graph_text = f"graph {parms['orientation']}\n"
         for node_id in nodes.keys():
@@ -147,7 +149,6 @@ if __name__ == "__main__":
 
     if "--out" in sys.argv:
         parms["print"] = False
-
         parms["exec_mermaid"] = True
         parms["exec_mermaid_filename"] = _variableArg("--out")
 
