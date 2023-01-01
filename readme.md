@@ -8,7 +8,7 @@ Write numbered lists, get trees!
 
 Output can be either Mermaid formatted data or as generated SVG and PNG files.
 
-![Tree Diagram of the list](examples/example.png)
+![Tree Diagram of the list](examples/example.svg)
 
 ## Input - Numbered lists
 ```
