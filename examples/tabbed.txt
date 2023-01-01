@@ -1,0 +1,10 @@
+Write a simple list language
+    Identify the need for labels
+    Write some lists
+        Recognise that sometimes tabs are simpler
+            They have some downsides
+        Consider removing labels
+            Realize that labels are needed for links
+                Consider a quick mode where you can write tabbed lists quickly
+        Write a labelling thingy
+    Home for tea and biscuits
