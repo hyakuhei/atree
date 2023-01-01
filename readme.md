@@ -55,3 +55,46 @@ docker pull minlag/mermaid-cli
 cat list.atree | python3 atree.py --out example
 ```
 
+# Tabbed lists
+If you just want to quickly write a list without labels, you can do that, and use the ```label.py``` script to auto-label
+
+```
+Write a simple list language
+    Identify the need for labels
+    Write some lists
+        Recognise that sometimes tabs are simpler
+            They have some downsides
+        Consider removing labels
+            Realize that labels are needed for links
+                Consider a quick mode where you can write tabbed lists quickly
+        Write a labelling thingy
+    Home for tea and biscuits
+```
+
+## Run the tool - print labelled output
+```
+cat examples/tabbed.txt | python3 label.py
+```
+This will output:
+```
+1. Write a simple list language
+1.1. Identify the need for labels
+1.2. Write some lists
+1.2.1. Recognise that sometimes tabs are simpler
+1.2.1.1. They have some downsides
+1.2.2. Consider removing labels
+1.2.2.1. Realize that labels are needed for links
+1.2.2.1.1. Consider a quick mode where you can write tabbed lists quickly
+1.2.3. Write a labelling thingy
+1.3. Home for tea and biscuits
+```
+
+This is useful because you can write tabbed lists really quickly, but later, you might want to use #links which requires you to have an ID to link to
+
+You can chain this together to create the images
+```
+cat examples/tabbed.txt | python3 label.py | python3 atree.py --out tabbed
+```
+
+![Tabbed Tree Diagram](examples/tabbed.svg)
+
