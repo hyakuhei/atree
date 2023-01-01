@@ -1,0 +1,16 @@
+Steal Car
+    While Moving
+        Hijack
+            Traffic signs
+            Force Stop
+        Redirect
+            Fake Road signs
+            Spoof GPS
+    While Stopped
+        Obtain key
+            Steal key
+                Make copy
+        Short Circuit
+            Access Interior
+            Find ignition cable
+            Connect cable

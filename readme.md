@@ -59,42 +59,54 @@ cat list.atree | python3 atree.py --out example
 If you just want to quickly write a list without labels, you can do that, and use the ```label.py``` script to auto-label
 
 ```
-Write a simple list language
-    Identify the need for labels
-    Write some lists
-        Recognise that sometimes tabs are simpler
-            They have some downsides
-        Consider removing labels
-            Realize that labels are needed for links
-                Consider a quick mode where you can write tabbed lists quickly
-        Write a labelling thingy
-    Home for tea and biscuits
+Steal Car
+    While Moving
+        Hijack
+            Traffic signs
+            Force Stop
+        Redirect
+            Fake Road signs
+            Spoof GPS
+    While Stopped
+        Obtain key
+            Steal key
+                Make copy
+        Short Circuit
+            Access Interior
+            Find ignition cable
+            Connect cable
 ```
 
 ## Run the tool - print labelled output
 ```
-cat examples/tabbed.txt | python3 label.py
+cat examples/steal.txt | python3 label.py
 ```
 This will output:
 ```
-1. Write a simple list language
-1.1. Identify the need for labels
-1.2. Write some lists
-1.2.1. Recognise that sometimes tabs are simpler
-1.2.1.1. They have some downsides
-1.2.2. Consider removing labels
-1.2.2.1. Realize that labels are needed for links
-1.2.2.1.1. Consider a quick mode where you can write tabbed lists quickly
-1.2.3. Write a labelling thingy
-1.3. Home for tea and biscuits
+1. Steal Car
+1.1. While Moving
+1.1.1. Hijack
+1.1.1.1. Traffic signs
+1.1.1.2. Force Stop
+1.1.2. Redirect
+1.1.2.1. Fake Road signs
+1.1.2.2. Spoof GPS
+1.2. While Stopped
+1.2.1. Obtain key
+1.2.1.1. Steal key
+1.2.1.1.1. Make copy
+1.2.2. Short Circuit
+1.2.2.1. Access Interior
+1.2.2.2. Find ignition cable
+1.2.2.3. Connect cable
 ```
 
 This is useful because you can write tabbed lists really quickly, but later, you might want to use #links which requires you to have an ID to link to
 
 You can chain this together to create the images
 ```
-cat examples/tabbed.txt | python3 label.py | python3 atree.py --out tabbed
+cat examples/steal.txt | python3 label.py | python3 atree.py --out steal
 ```
 
-![Tabbed Tree Diagram](examples/tabbed.svg)
+![Tabbed Tree Diagram](examples/steal.svg)
 
