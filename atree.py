@@ -1,4 +1,4 @@
-import sys, tempfile, subprocess, os
+import sys, subprocess, os
 
 from typing import Union
 
@@ -24,14 +24,10 @@ def alphaFromDecimals(decimals: str) -> str:
 
     return node_id
 
-
-if __name__ == "__main__":
-    # In-tree text directives
-    link_txt = "#link"
-
-    nodes = {}
-    links = []
+def readIn(nodes: dict, links: list, directives: dict):
+    directive_keys = directives.keys()
     for s in sys.stdin.readlines():
+        s = s.strip()
         slices = s.split(" ")
         if len(slices) < 2:
             # skip the line
@@ -44,52 +40,107 @@ if __name__ == "__main__":
         node_id = alphaFromDecimals(slices[0])
 
         if node_id != "":
-            nodes[node_id] = " ".join(slices[1:]).strip()
+            # Add text to the node
+            nodes[node_id] = {
+                'text':" ".join(slices[1:]),
+                'directives':{}
+            }
+            # Add any directives
+            text_directives = [i for i in directive_keys if i in nodes[node_id]['text']]
+            for dir in text_directives:
+                nodes[node_id]['directives'][dir] = directives[dir]
 
+    # Process links
     for node_id in nodes.keys():
         # Add all the hierarchical links
         if node_id[:-1] in nodes:
             links.append(f"{node_id[:-1]} --> {node_id}")
 
-        # Add any additional links (using the #link directive)
-        # A user can add a link which will draw from the current node to the specified one
-        # 1. Top
-        # 1.1 Left #link 1.2.3, 1.2
-        # 1.2 Right
-        # 1.2.3 Down
+def directive_link(node_id: str, nodes: dict, links: list):
+    # Add additional links (using the #link directive)
+    # A user can add a link which will draw from the current node to the specified one
+    # 1. Top
+    # 1.1 Left #link 1.2.3, 1.2
+    # 1.2 Right
+    # 1.2.3 Down
 
-        # A link directive (currently "#link") should be followed by a comma separated list of items to link to
-        # The string should then either terminate, or another # directive may start.
-        # That other directive might be another #link or something unimplemented yet, like maybe #rlink (reversed arrow)...
-        link_idx = nodes[node_id].find(link_txt)
-        while link_idx != -1 and link_idx < len(nodes[node_id]):
-            next_directive_idx = nodes[node_id][link_idx + 1 :].find("#")
-            if next_directive_idx == -1:
-                next_directive_idx = len(nodes[node_id])  # (last idx)
+    # A link directive (currently "#link") should be followed by a comma separated list of items to link to
+    # The string should then either terminate, or another # directive may start.
+    # That other directive might be another #link or something unimplemented yet, like maybe #rlink (reversed arrow)...
+    link_idx = nodes[node_id]['text'].find(link_txt)
+    while link_idx != -1 and link_idx < len(nodes[node_id]['text']):
+        next_directive_idx = nodes[node_id]['text'][link_idx + 1 :].find("#")
+        if next_directive_idx == -1:
+            next_directive_idx = len(nodes[node_id]['text'])  # (last idx)
 
-            # Ok so now we look for all the number strings between link_idx
-            # print(f"Found a directive in {nodes[node_id]} between {link_idx} and {next_directive_idx}")
+        # Ok so now we look for all the number strings between link_idx
+        # print(f"Found a directive in {nodes[node_id]} between {link_idx} and {next_directive_idx}")
 
-            for nodeString in (
-                nodes[node_id][link_idx + len(link_txt) : next_directive_idx]
-                .replace(",", " ")
-                .split(" ")
-            ):
-                nodeString = nodeString.strip()
-                if nodeString != "":
-                    links.append(f"{node_id} --> {alphaFromDecimals(nodeString)}")
+        for nodeString in (
+            nodes[node_id]['text'][link_idx + len(link_txt) : next_directive_idx]
+            .replace(",", " ")
+            .split(" ")
+        ):
+            nodeString = nodeString.strip()
+            if nodeString != "":
+                links.append(f"{node_id} --> {alphaFromDecimals(nodeString)}")
 
-            # Skip ahead (or to the end of the string)
-            link_idx = next_directive_idx
+        # Skip ahead (or to the end of the string)
+        link_idx = next_directive_idx
+
+def directive_AND(node_id: str, nodes: dict, links: list, subgraphs: dict):
+    # return
+    and_idx = nodes[node_id]['text'].find("#AND")
+    if and_idx > -1:    
+        # Find immediate children of this node and add them to a subgraph
+        subgraph_id = len(subgraphs.items())
+        subgraphs[subgraph_id] = [i.split(" ")[-1] for i in links if i.startswith(f"{node_id} -->")]
+        subgraphs[subgraph_id].append(node_id)
+
+def process_directives(nodes: dict, links: list, subgraphs: dict):
+    for node_id in nodes.keys():
+        if "#link" in nodes[node_id]['directives']:
+            directive_link(node_id, nodes, links)
+        
+        if "#AND" in nodes[node_id]['directives']:
+            directive_AND(node_id, nodes, links, subgraphs)
+    
+
+
+if __name__ == "__main__":
+    # In-tree text directives
+    link_txt = "#link"
+    and_txt = "#AND"
+
+    directives = {
+        "#link":{
+            'function':directive_link
+        },
+        "#AND":{
+            'function':directive_AND
+        }
+    }
+
+    nodes = {}
+    links = []
+    subgraphs = {}
+    
+    readIn(nodes, links, directives)
+
+    process_directives(nodes, links, subgraphs)
 
     # Go through the code and strip out any #directives
     for node_id in nodes.keys():
-        link_idx = nodes[node_id].find(link_txt)
-        if link_idx > 0:
-            nodes[node_id] = nodes[node_id][0 : link_idx - 1]
+        if len(nodes[node_id]['directives'].keys()) == 0:
+            continue # go to the next iteration of the node_id loop
+        else:
+            for directive_key in directives.keys():
+                idx = nodes[node_id]['text'].find(directive_key)
+                if idx > -1:
+                    nodes[node_id]['text'] = nodes[node_id]['text'][0: idx -1]
+                    continue # go to the next iteration of the directive_key loop
 
     ## Argument Handling
-
     commands = {
         "--help": (
             "--help",
@@ -140,11 +191,17 @@ if __name__ == "__main__":
     def _genGraphText(nodes):
         graph_text = f"graph {parms['orientation']}\n"
         for node_id in nodes.keys():
-            graph_text += f"\t{node_id}[{nodes[node_id]}]\n"
+            graph_text += f"\t{node_id}[{nodes[node_id]['text']}]\n"
 
         for link in links:
             graph_text += f"\t{link}\n"
-    
+
+        for subgraph_id in subgraphs.keys():
+            graph_text += f"\tsubgraph {subgraph_id} [ ]\n"
+            for node_id in subgraphs[subgraph_id]:
+                graph_text += f"\t\t {node_id}\n"
+            graph_text += f"\tend\n"
+
         return graph_text
 
     if "--out" in sys.argv:
@@ -175,8 +232,8 @@ if __name__ == "__main__":
 
     if parms["wrap"]:
         for key in nodes.keys():
-            s = _wrap(nodes[key], parms["wrap_width"])
-            nodes[key] = s
+            s = _wrap(nodes[key]['text'], parms["wrap_width"])
+            nodes[key]['text'] = s
         
     if parms["exec_mermaid"]:
         # Call the mermaid CLI (expecting Docker) to generate the file

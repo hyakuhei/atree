@@ -9,7 +9,7 @@
 
 0.2.2.1 Threaten
 0.2.2.2 Blackmail
-0.2.2.3 Eavesdrop
+0.2.2.3 Eavesdrop #AND
 0.2.2.4 Bribe
 
 0.2.2.3.1 Listen to Conversation

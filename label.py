@@ -1,6 +1,5 @@
 import sys, json
 
-line_ctr = 0
 depth = 0
 pdepth = 0
 
@@ -15,11 +14,15 @@ def visit(node, label=""):
         for c in node['children']:
             visit(c,l)
 
+# Build a tree from the tabbed input
+# Walk the tree and print the labels
+
 if __name__ == "__main__":
     for s in sys.stdin.readlines():
-        line_ctr += 1
-        slices = s.split("    ")
-        depth = len(slices)
+        if len(s.strip()) == 0:
+            continue
+        
+        depth = len(s.split("    "))
 
         new_node = {
                     "string": s.strip(),
@@ -65,6 +68,5 @@ if __name__ == "__main__":
 
                 #setup for next loop
                 prev_node = new_node
-
     
     visit(root_node)
