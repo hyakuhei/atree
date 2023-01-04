@@ -4,7 +4,7 @@ from typing import Union
 
 
 def alphaFromDecimals(decimals: str) -> str:
-    map = {
+    mapping = {
         "1": "A",
         "2": "B",
         "3": "C",
@@ -19,14 +19,93 @@ def alphaFromDecimals(decimals: str) -> str:
 
     node_id = ""
     for c in decimals:
-        if c in map:
-            node_id += map[c]
+        if c in mapping:
+            node_id += mapping[c]
 
     return node_id
 
+def visit(node:dict, new_lines: list, label: str=""):
+    l = f"{label}{node['id']}."
+    new_lines.append(f"{l} {node['string']}")
+
+    if len(node['children']) > 0:
+        for c in node['children']:
+            visit(c, new_lines, label=l)
+
+def parseTabbed(lines: list[str]):
+    prev_node = None
+    root_node = None
+
+    for s in lines:
+        if len(s.strip()) == 0:
+            continue
+        
+        depth = len(s.split("    "))
+
+        new_node = {
+                    "string": s.strip(),
+                    "depth": depth,
+                    "children": [],
+                    "parent": None,
+                    "id":-1
+                }
+
+        if prev_node == None:
+            new_node['id'] = 1
+            prev_node = new_node
+            root_node = new_node
+        else:
+            if depth == prev_node["depth"]:
+                # Add a child to the parent of the prev_node
+                # Making prev_node a sibiling of this new node
+                new_node["parent"] = prev_node["parent"]
+                new_node["parent"]["children"].append(new_node)
+                new_node['id'] = len(new_node["parent"]["children"])
+
+                #setup for next loop
+                prev_node = new_node
+
+            elif depth > prev_node["depth"]:
+                # Add a child to prev node
+                new_node["parent"] = prev_node
+                prev_node["children"].append(new_node)
+                new_node['id'] = len(new_node["parent"]["children"])
+
+                #setup for next loop
+                prev_node = new_node
+
+            elif depth < prev_node["depth"]:
+                #Walk back up the tree 
+                ptr = prev_node
+                while depth < ptr["depth"]:
+                    ptr = ptr["parent"]
+                
+                new_node["parent"] = ptr["parent"]
+                ptr["parent"]["children"].append(new_node)
+                new_node['id'] = len(new_node["parent"]["children"])
+
+                #setup for next loop
+                prev_node = new_node
+    
+    new_lines = []
+    visit(root_node, new_lines)
+    return new_lines
+
 def readIn(nodes: dict, links: list, directives: dict):
     directive_keys = directives.keys()
-    for s in sys.stdin.readlines():
+    lines = sys.stdin.readlines()
+
+    first_id = alphaFromDecimals(lines[0])
+    if first_id == "":
+        print("No numberered list found - probably tabbed")
+        lines = parseTabbed(lines)
+    
+    first_id = alphaFromDecimals(lines[0])
+    if first_id == "":
+        print("ERROR")
+        sys.exit(-1) 
+
+    for s in lines:
         s = s.strip()
         slices = s.split(" ")
         if len(slices) < 2:
@@ -38,9 +117,12 @@ def readIn(nodes: dict, links: list, directives: dict):
         # e.g 1.2.3.4.5.
 
         node_id = alphaFromDecimals(slices[0])
+        # If the list starts with a number and a period
+        # e.g 1. do stuff 
+        # Then it's treated as a numbered list
 
         if node_id != "":
-            # Add text to the node
+            # Create the node and add text
             nodes[node_id] = {
                 'text':" ".join(slices[1:]),
                 'directives':{}
@@ -124,7 +206,7 @@ if __name__ == "__main__":
     nodes = {}
     links = []
     subgraphs = {}
-    
+
     readIn(nodes, links, directives)
 
     process_directives(nodes, links, subgraphs)
@@ -157,7 +239,7 @@ if __name__ == "__main__":
         "--lr":(
             "--lr",
             "Print graph left-to-right rather than top down"
-        )
+        ),
     }
 
     parms = {"exec_mermaid": False, "print": True, "wrap": False, "orientation": "TD"}
