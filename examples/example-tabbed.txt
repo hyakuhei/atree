@@ -1,0 +1,9 @@
+Like writing lists
+    Write a list
+    Read a list
+    Realize you need a tool for the list
+        Write a tool #anchor write
+            Test the tool
+            Publish the tool on GitHub
+        Realize that you need support for links
+            Add the implementation #link write

@@ -2,7 +2,7 @@
 1.1 Write a list
 1.2 Read a list
 1.3 Realize you need a tool for the list
-1.3.1 Write a tool
+1.3.1 Write a tool #AND
 1.3.1.2 Test the tool
 1.3.1.3 Publish the tool on GitHub
 1.3.1.4 Realize that you need support for links
