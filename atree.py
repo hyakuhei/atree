@@ -138,7 +138,7 @@ def readIn(nodes: dict, links: list, directives: dict):
         if node_id[:-1] in nodes:
             links.append(f"{node_id[:-1]} --> {node_id}")
 
-def directive_link(node_id: str, nodes: dict, links: list):
+def directive_link(node_id: str, nodes: dict, links: list, anchors: dict):
     # Add additional links (using the #link directive)
     # A user can add a link which will draw from the current node to the specified one
     # 1. Top
@@ -149,24 +149,30 @@ def directive_link(node_id: str, nodes: dict, links: list):
     # A link directive (currently "#link") should be followed by a comma separated list of items to link to
     # The string should then either terminate, or another # directive may start.
     # That other directive might be another #link or something unimplemented yet, like maybe #rlink (reversed arrow)...
-    link_idx = nodes[node_id]['text'].find(link_txt)
+    link_idx = nodes[node_id]['text'].find("#link")
     while link_idx != -1 and link_idx < len(nodes[node_id]['text']):
         next_directive_idx = nodes[node_id]['text'][link_idx + 1 :].find("#")
         if next_directive_idx == -1:
             next_directive_idx = len(nodes[node_id]['text'])  # (last idx)
 
-        # Ok so now we look for all the number strings between link_idx
+        # look for all the number strings between link_idx
         # print(f"Found a directive in {nodes[node_id]} between {link_idx} and {next_directive_idx}")
-
         for nodeString in (
-            nodes[node_id]['text'][link_idx + len(link_txt) : next_directive_idx]
+            nodes[node_id]['text'][link_idx + len("#link") : next_directive_idx]
             .replace(",", " ")
             .split(" ")
         ):
             nodeString = nodeString.strip()
             if nodeString != "":
-                links.append(f"{node_id} --> {alphaFromDecimals(nodeString)}")
-
+                # See if this is a node we have, or an anchor, or a broken link 
+                natural_node_id = alphaFromDecimals(nodeString)
+                if natural_node_id in nodes:
+                    links.append(f"{node_id} -.-> {natural_node_id}")
+                elif nodeString in anchors:
+                    links.append(f"{node_id} -.-> {anchors[nodeString]}")
+                else:
+                    print(f"Bad Link {nodeString}")
+                
         # Skip ahead (or to the end of the string)
         link_idx = next_directive_idx
 
@@ -178,16 +184,27 @@ def directive_AND(node_id: str, nodes: dict, links: list, subgraphs: dict):
         subgraph_id = len(subgraphs.items())
         subgraphs[subgraph_id] = [i.split(" ")[-1] for i in links if i.startswith(f"{node_id} -->")]
         subgraphs[subgraph_id].append(node_id)
+    
+def directive_anchor(node_id: str, nodes: dict, anchors:dict):
+    anchor_idx = nodes[node_id]['text'].find("#anchor")
+    if anchor_idx > -1:
+        #The anchor should be the next word after the #anchor directive
+        anchor_id = nodes[node_id]['text'][anchor_idx + len("#anchor")+1:].split(" ")[0]
+    
+        anchors[anchor_id]=node_id
 
-def process_directives(nodes: dict, links: list, subgraphs: dict):
+def process_directives(nodes: dict, links: list, subgraphs: dict, anchors: dict):
+    # We want to make sure that all the Anchors are processed before any links get processed
+    for node_id in nodes.keys():
+        if "#anchor" in nodes[node_id]['directives']:
+            directive_anchor(node_id, nodes, anchors)
+
     for node_id in nodes.keys():
         if "#link" in nodes[node_id]['directives']:
-            directive_link(node_id, nodes, links)
+            directive_link(node_id, nodes, links, anchors)
         
         if "#AND" in nodes[node_id]['directives']:
             directive_AND(node_id, nodes, links, subgraphs)
-    
-
 
 if __name__ == "__main__":
     # In-tree text directives
@@ -200,16 +217,20 @@ if __name__ == "__main__":
         },
         "#AND":{
             'function':directive_AND
+        },
+        "#anchor":{
+            'function':directive_anchor
         }
     }
 
     nodes = {}
     links = []
     subgraphs = {}
+    anchors = {} #Map "anchor name" to "node_id"
 
     readIn(nodes, links, directives)
 
-    process_directives(nodes, links, subgraphs)
+    process_directives(nodes, links, subgraphs, anchors)
 
     # Go through the code and strip out any #directives
     for node_id in nodes.keys():
@@ -244,7 +265,6 @@ if __name__ == "__main__":
 
     parms = {"exec_mermaid": False, "print": True, "wrap": False, "orientation": "TD"}
 
-
     def _variableArg(flag: str) -> Union[str, None]:
         if flag in sys.argv:
             assert len(sys.argv) > sys.argv.index(
@@ -254,7 +274,6 @@ if __name__ == "__main__":
             return sys.argv[sys.argv.index(flag) + 1]
         else:
             return None
-
 
     def _wrap(s: str, width: int) -> str:
         n = ""
@@ -268,7 +287,6 @@ if __name__ == "__main__":
                 n += c
 
         return n
-
 
     def _genGraphText(nodes):
         graph_text = f"graph {parms['orientation']}\n"
